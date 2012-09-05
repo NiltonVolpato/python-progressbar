@@ -18,7 +18,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-'''Compatability methods and classes for the progressbar module'''
+"""Compatibility methods and classes for the progressbar module."""
 
 
 # Python 3.x (and backports) use a modified iterator syntax
@@ -42,5 +42,4 @@ except NameError:
    def any(iterator):
       for item in iterator:
          if item: return True
-
       return False

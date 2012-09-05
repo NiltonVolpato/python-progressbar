@@ -18,7 +18,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-'''Default ProgressBar widgets'''
+"""Default ProgressBar widgets."""
 
 from __future__ import division
 
@@ -40,7 +40,7 @@ def format_updatable(updatable, pbar):
 
 
 class Widget(AbstractWidget):
-    '''The base class for all widgets
+    """The base class for all widgets.
 
     The ProgressBar will call the widget's update value when the widget should
     be updated. The widget's size may change between calls, but the widget may
@@ -48,38 +48,38 @@ class Widget(AbstractWidget):
 
     The boolean TIME_SENSITIVE informs the ProgressBar that it should be
     updated more often because it is time sensitive.
-    '''
+    """
 
     TIME_SENSITIVE = False
     __slots__ = ()
 
     @abstractmethod
     def update(self, pbar):
-        '''Updates the widget.
+        """Updates the widget.
 
         pbar - a reference to the calling ProgressBar
-        '''
+        """
 
 
 class WidgetHFill(Widget):
-    '''The base class for all variable width widgets.
+    """The base class for all variable width widgets.
 
     This widget is much like the \\hfill command in TeX, it will expand to
     fill the line. You can use more than one in the same line, and they will
     all have the same width, and together will fill the line.
-    '''
+    """
 
     @abstractmethod
     def update(self, pbar, width):
-        '''Updates the widget providing the total width the widget must fill.
+        """Updates the widget providing the total width the widget must fill.
 
         pbar - a reference to the calling ProgressBar
         width - The total width the widget must fill
-        '''
+        """
 
 
 class Timer(Widget):
-    'Widget which displays the elapsed seconds.'
+    """Widget which displays the elapsed seconds."""
 
     __slots__ = ('format',)
     TIME_SENSITIVE = True
@@ -89,24 +89,24 @@ class Timer(Widget):
 
     @staticmethod
     def format_time(seconds):
-        'Formats time as the string "HH:MM:SS".'
+        """Formats time as the string "HH:MM:SS"."""
 
         return str(datetime.timedelta(seconds=int(seconds)))
 
 
     def update(self, pbar):
-        'Updates the widget to show the elapsed time.'
+        """Updates the widget to show the elapsed time."""
 
         return self.format % self.format_time(pbar.seconds_elapsed)
 
 
 class ETA(Timer):
-    'Widget which attempts to estimate the time of arrival.'
+    """Widget which attempts to estimate the time of arrival."""
 
     TIME_SENSITIVE = True
 
     def update(self, pbar):
-        'Updates the widget to show the ETA or total time when finished.'
+        """Updates the widget to show the ETA or total time when finished."""
 
         if pbar.currval == 0:
             return 'ETA:  --:--:--'
@@ -119,7 +119,7 @@ class ETA(Timer):
 
 
 class FileTransferSpeed(Widget):
-    'Widget for showing the transfer speed (useful for file transfers).'
+    """Widget for showing the transfer speed (useful for file transfers)."""
 
     format = '%6.2f %s%s/s'
     prefixes = ' kMGTPEZY'
@@ -129,7 +129,7 @@ class FileTransferSpeed(Widget):
         self.unit = unit
 
     def update(self, pbar):
-        'Updates the widget with the current SI prefixed speed.'
+        """Updates the widget with the current SI prefixed speed."""
 
         if pbar.seconds_elapsed < 2e-6 or pbar.currval < 2e-6: # =~ 0
             scaled = power = 0
@@ -142,9 +142,9 @@ class FileTransferSpeed(Widget):
 
 
 class AnimatedMarker(Widget):
-    '''An animated marker for the progress bar which defaults to appear as if
+    """An animated marker for the progress bar which defaults to appear as if
     it were rotating.
-    '''
+    """
 
     __slots__ = ('markers', 'curmark')
 
@@ -153,8 +153,8 @@ class AnimatedMarker(Widget):
         self.curmark = -1
 
     def update(self, pbar):
-        '''Updates the widget to show the next marker or the first marker when
-        finished'''
+        """Updates the widget to show the next marker or the first marker when
+        finished"""
 
         if pbar.finished: return self.markers[0]
 
@@ -166,7 +166,7 @@ RotatingMarker = AnimatedMarker
 
 
 class Counter(Widget):
-    'Displays the current count'
+    """Displays the current count."""
 
     __slots__ = ('format',)
 
@@ -178,14 +178,14 @@ class Counter(Widget):
 
 
 class Percentage(Widget):
-    'Displays the current percentage as a number with a percent sign.'
+    """Displays the current percentage as a number with a percent sign."""
 
     def update(self, pbar):
         return '%3d%%' % pbar.percentage()
 
 
 class FormatLabel(Timer):
-    'Displays a formatted label'
+    """Displays a formatted label."""
 
     mapping = {
         'elapsed': ('seconds_elapsed', Timer.format_time),
@@ -217,7 +217,7 @@ class FormatLabel(Timer):
 
 
 class SimpleProgress(Widget):
-    'Returns progress as a count of the total (e.g.: "5 of 47")'
+    """Returns progress as a count of the total (e.g.: "5 of 47")."""
 
     __slots__ = ('sep',)
 
@@ -229,20 +229,20 @@ class SimpleProgress(Widget):
 
 
 class Bar(WidgetHFill):
-    'A progress bar which stretches to fill the line.'
+    """A progress bar which stretches to fill the line."""
 
     __slots__ = ('marker', 'left', 'right', 'fill', 'fill_left')
 
     def __init__(self, marker='#', left='|', right='|', fill=' ',
                  fill_left=True):
-        '''Creates a customizable progress bar.
+        """Creates a customizable progress bar.
 
         marker - string or updatable object to use as a marker
         left - string or updatable object to use as a left border
         right - string or updatable object to use as a right border
         fill - character to use for the empty part of the progress bar
         fill_left - whether to fill from the left or the right
-        '''
+        """
         self.marker = marker
         self.left = left
         self.right = right
@@ -251,7 +251,7 @@ class Bar(WidgetHFill):
 
 
     def update(self, pbar, width):
-        'Updates the progress bar and its subcomponents'
+        """Updates the progress bar and its subcomponents."""
 
         left, marked, right = (format_updatable(i, pbar) for i in
                                (self.left, self.marker, self.right))
@@ -270,18 +270,18 @@ class Bar(WidgetHFill):
 
 
 class ReverseBar(Bar):
-    'A bar which has a marker which bounces from side to side.'
+    """A bar which has a marker which bounces from side to side."""
 
     def __init__(self, marker='#', left='|', right='|', fill=' ',
                  fill_left=False):
-        '''Creates a customizable progress bar.
+        """Creates a customizable progress bar.
 
         marker - string or updatable object to use as a marker
         left - string or updatable object to use as a left border
         right - string or updatable object to use as a right border
         fill - character to use for the empty part of the progress bar
         fill_left - whether to fill from the left or the right
-        '''
+        """
         self.marker = marker
         self.left = left
         self.right = right
@@ -291,7 +291,7 @@ class ReverseBar(Bar):
 
 class BouncingBar(Bar):
     def update(self, pbar, width):
-        'Updates the progress bar and its subcomponents'
+        """Updates the progress bar and its subcomponents."""
 
         left, marker, right = (format_updatable(i, pbar) for i in
                                (self.left, self.marker, self.right))

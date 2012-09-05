@@ -47,7 +47,7 @@ def example1():
 @example
 def example2():
     class CrazyFileTransferSpeed(FileTransferSpeed):
-        "It's bigger between 45 and 80 percent"
+        """It's bigger between 45 and 80 percent."""
         def update(self, pbar):
             if 45 < pbar.percentage() < 80:
                 return 'Bigger Now ' + FileTransferSpeed.update(self,pbar)
