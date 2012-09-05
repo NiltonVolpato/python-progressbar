@@ -23,7 +23,9 @@
 
 # Python 3.x (and backports) use a modified iterator syntax
 # This will allow 2.x to behave with 3.x iterators
-if not hasattr(__builtins__, 'next'):
+try:
+  next
+except NameError:
     def next(iter):
         try:
             # Try new style iterators
@@ -34,7 +36,9 @@ if not hasattr(__builtins__, 'next'):
 
 
 # Python < 2.5 does not have "any"
-if not hasattr(__builtins__, 'any'):
+try:
+  any
+except NameError:
    def any(iterator):
       for item in iterator:
          if item: return True
