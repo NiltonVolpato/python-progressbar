@@ -81,11 +81,11 @@ class WidgetHFill(Widget):
 class Timer(Widget):
     """Widget which displays the elapsed seconds."""
 
-    __slots__ = ('format',)
+    __slots__ = ('format_string',)
     TIME_SENSITIVE = True
 
     def __init__(self, format='Elapsed Time: %s'):
-        self.format = format
+        self.format_string = format
 
     @staticmethod
     def format_time(seconds):
@@ -97,7 +97,7 @@ class Timer(Widget):
     def update(self, pbar):
         """Updates the widget to show the elapsed time."""
 
-        return self.format % self.format_time(pbar.seconds_elapsed)
+        return self.format_string % self.format_time(pbar.seconds_elapsed)
 
 
 class ETA(Timer):
@@ -121,9 +121,9 @@ class ETA(Timer):
 class FileTransferSpeed(Widget):
     """Widget for showing the transfer speed (useful for file transfers)."""
 
-    format = '%6.2f %s%s/s'
-    prefixes = ' kMGTPEZY'
-    __slots__ = ('unit', 'format')
+    FORMAT = '%6.2f %s%s/s'
+    PREFIXES = ' kMGTPEZY'
+    __slots__ = ('unit',)
 
     def __init__(self, unit='B'):
         self.unit = unit
@@ -138,7 +138,7 @@ class FileTransferSpeed(Widget):
             power = int(math.log(speed, 1000))
             scaled = speed / 1000.**power
 
-        return self.format % (scaled, self.prefixes[power], self.unit)
+        return self.FORMAT % (scaled, self.PREFIXES[power], self.unit)
 
 
 class AnimatedMarker(Widget):
@@ -168,13 +168,13 @@ RotatingMarker = AnimatedMarker
 class Counter(Widget):
     """Displays the current count."""
 
-    __slots__ = ('format',)
+    __slots__ = ('format_string',)
 
     def __init__(self, format='%d'):
-        self.format = format
+        self.format_string = format
 
     def update(self, pbar):
-        return self.format % pbar.currval
+        return self.format_string % pbar.currval
 
 
 class Percentage(Widget):
@@ -197,9 +197,9 @@ class FormatLabel(Timer):
         'value': ('currval', None)
     }
 
-    __slots__ = ('format',)
+    __slots__ = ('format_string',)
     def __init__(self, format):
-        self.format = format
+        self.format_string = format
 
     def update(self, pbar):
         context = {}
@@ -213,7 +213,7 @@ class FormatLabel(Timer):
                    context[name] = transform(value)
             except: pass
 
-        return self.format % context
+        return self.format_string % context
 
 
 class SimpleProgress(Widget):
