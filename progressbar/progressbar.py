@@ -35,6 +35,7 @@ try:
 except ImportError:
     pass
 
+from compat import *  # for: any, next
 import widgets
 
 
@@ -128,6 +129,7 @@ class ProgressBar(object):
         self.seconds_elapsed = 0
         self.start_time = None
         self.update_interval = 1
+        self.next_update = 0
 
 
     def __call__(self, iterable):
@@ -150,10 +152,14 @@ class ProgressBar(object):
     def __next__(self):
         try:
             value = next(self.__iterable)
-            if self.start_time is None: self.start()
-            else: self.update(self.currval + 1)
+            if self.start_time is None:
+                self.start()
+            else:
+                self.update(self.currval + 1)
             return value
         except StopIteration:
+            if self.start_time is None:
+                self.start()
             self.finish()
             raise
 
@@ -178,6 +184,8 @@ class ProgressBar(object):
 
     def percentage(self):
         """Returns the progress as a percentage."""
+        if self.currval >= self.maxval:
+            return 100.0
         return self.currval * 100.0 / self.maxval
 
     percent = property(percentage)
@@ -289,6 +297,8 @@ class ProgressBar(object):
     def finish(self):
         """Puts the ProgressBar bar in the finished state."""
 
+        if self.finished:
+            return
         self.finished = True
         self.update(self.maxval)
         self.fd.write('\n')

@@ -25,7 +25,6 @@ def example(fn):
     examples.append(wrapped)
     return wrapped
 
-
 @example
 def example0():
     pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=300).start()
@@ -198,6 +197,13 @@ def example18():
         time.sleep(0.01 + (i < 100) * 0.01 + (i > 400) * 0.9)
         pbar.update(i + 1)
     pbar.finish()
+
+@example
+def example19():
+  pbar = ProgressBar()
+  for i in pbar([]):
+    pass
+  pbar.finish()
 
 if __name__ == '__main__':
     try:
