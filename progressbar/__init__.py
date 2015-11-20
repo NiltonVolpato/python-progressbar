@@ -44,6 +44,6 @@ __author_email__ = 'first-name dot last-name @ gmail.com'
 __date__ = '2011-05-14'
 __version__ = '2.3'
 
-from compat import *
-from widgets import *
-from progressbar import *
+from .compat import *
+from .widgets import *
+from .progressbar import *
