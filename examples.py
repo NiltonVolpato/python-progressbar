@@ -209,4 +209,4 @@ if __name__ == '__main__':
     try:
         for example in examples: example()
     except KeyboardInterrupt:
-        sys.stdout('\nQuitting examples.\n')
+        sys.stdout.write('\nQuitting examples.\n')
