@@ -262,6 +262,7 @@ class ProgressBar(object):
         self.seconds_elapsed = now - self.start_time
         self.next_update = self.currval + self.update_interval
         self.fd.write(self._format_line() + '\r')
+        self.fd.flush()
         self.last_update_time = now
 
 
