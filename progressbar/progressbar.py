@@ -185,7 +185,7 @@ class ProgressBar(object):
         """Returns the progress as a percentage."""
         if self.currval >= self.maxval:
             return 100.0
-        return self.currval * 100.0 / self.maxval
+        return (self.currval * 100.0 / self.maxval) if self.maxval else 100.00
 
     percent = property(percentage)
 
