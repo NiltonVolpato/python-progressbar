@@ -204,6 +204,16 @@ def example19():
   for i in pbar([]):
     pass
   pbar.finish()
+  
+@example
+def example20():
+    widgets = [FormatLabel('Processed: %(value)d/%(max)d items (in: %(elapsed)s)'), 
+                           ' -=- ', Percentage(),
+                           ' -=- ', ETA()]
+    pbar = ProgressBar(maxval=15, widgets=widgets, endline_character='\n')
+    pbar.update_interval = 10
+    for i in pbar((i for i in range(15))):
+        time.sleep(0.7)  
 
 if __name__ == '__main__':
     try:
