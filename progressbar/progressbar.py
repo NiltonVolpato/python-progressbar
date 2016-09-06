@@ -84,7 +84,7 @@ class ProgressBar(object):
      - percentage(): progress in percent [0..100]
     """
 
-    __slots__ = ('currval', 'fd', 'finished', 'last_update_time',
+    __slots__ = ('currval', 'endline_character', 'fd', 'finished', 'last_update_time',
                  'left_justify', 'maxval', 'next_update', 'num_intervals',
                  'poll', 'seconds_elapsed', 'signal_set', 'start_time',
                  'term_width', 'update_interval', 'widgets', '_time_sensitive',
@@ -95,7 +95,7 @@ class ProgressBar(object):
     _DEFAULT_WIDGETS = [widgets.Percentage(), ' ', widgets.Bar()]
 
     def __init__(self, maxval=None, widgets=None, term_width=None, poll=1,
-                 left_justify=True, fd=sys.stderr):
+                 left_justify=True, fd=sys.stderr, endline_character='\r'):
         """Initializes a progress bar with sane defaults."""
 
         # Don't share a reference with any other progress bars
@@ -106,6 +106,7 @@ class ProgressBar(object):
         self.widgets = widgets
         self.fd = fd
         self.left_justify = left_justify
+        self.endline_character = endline_character
 
         self.signal_set = False
         if term_width is not None:
@@ -260,7 +261,7 @@ class ProgressBar(object):
         now = time.time()
         self.seconds_elapsed = now - self.start_time
         self.next_update = self.currval + self.update_interval
-        self.fd.write(self._format_line() + '\r')
+        self.fd.write(self._format_line() + self.endline_character)
         self.fd.flush()
         self.last_update_time = now
 
