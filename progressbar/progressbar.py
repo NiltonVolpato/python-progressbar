@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # progressbar  - Text progress bar library for Python.
@@ -35,8 +34,8 @@ try:
 except ImportError:
     pass
 
-from compat import *  # for: any, next
-import widgets
+from .compat import *  # for: any, next
+from . import widgets
 
 
 class UnknownLength: pass
@@ -188,7 +187,7 @@ class ProgressBar(object):
 		return float("NaN")
         if self.currval >= self.maxval:
             return 100.0
-        return self.currval * 100.0 / self.maxval
+        return (self.currval * 100.0 / self.maxval) if self.maxval else 100.00
 
     percent = property(percentage)
 
@@ -264,6 +263,7 @@ class ProgressBar(object):
         self.seconds_elapsed = now - self.start_time
         self.next_update = self.currval + self.update_interval
         self.fd.write(self._format_line() + '\r')
+        self.fd.flush()
         self.last_update_time = now
 
 

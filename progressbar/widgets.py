@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # progressbar  - Text progress bar library for Python.
@@ -124,7 +123,7 @@ class AdaptiveETA(Timer):
 
     Uses a weighted average of two estimates:
       1) ETA based on the total progress and time elapsed so far
-      2) ETA based on the progress as per tha last 10 update reports
+      2) ETA based on the progress as per the last 10 update reports
 
     The weight depends on the current progress so that to begin with the
     total progress is used and at the end only the most recent progress is
