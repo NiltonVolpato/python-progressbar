@@ -183,6 +183,8 @@ class ProgressBar(object):
 
     def percentage(self):
         """Returns the progress as a percentage."""
+	if self.maxval is UnknownLength:
+		return float("NaN")
         if self.currval >= self.maxval:
             return 100.0
         return (self.currval * 100.0 / self.maxval) if self.maxval else 100.00

@@ -32,6 +32,7 @@ except ImportError:
 else:
     AbstractWidget = ABCMeta('AbstractWidget', (object,), {})
 
+from .progressbar import UnknownLength
 
 def format_updatable(updatable, pbar):
     if hasattr(updatable, 'update'): return updatable.update(pbar)
@@ -107,7 +108,7 @@ class ETA(Timer):
     def update(self, pbar):
         """Updates the widget to show the ETA or total time when finished."""
 
-        if pbar.currval == 0:
+        if pbar.maxval is UnknownLength or pbar.currval == 0:
             return 'ETA:  --:--:--'
         elif pbar.finished:
             return 'Time: %s' % self.format_time(pbar.seconds_elapsed)
@@ -145,7 +146,7 @@ class AdaptiveETA(Timer):
 
     def update(self, pbar):
         """Updates the widget to show the ETA or total time when finished."""
-        if pbar.currval == 0:
+        if pbar.maxval is UnknownLength or pbar.currval == 0:
             return 'ETA:  --:--:--'
         elif pbar.finished:
             return 'Time: %s' % self.format_time(pbar.seconds_elapsed)
@@ -269,7 +270,7 @@ class SimpleProgress(Widget):
         self.sep = sep
 
     def update(self, pbar):
-        return '%d%s%d' % (pbar.currval, self.sep, pbar.maxval)
+        return '%d%s%s' % (pbar.currval, self.sep, pbar.maxval)
 
 
 class Bar(WidgetHFill):
@@ -302,7 +303,7 @@ class Bar(WidgetHFill):
 
         width -= len(left) + len(right)
         # Marked must *always* have length of 1
-        if pbar.maxval:
+        if pbar.maxval is not UnknownLength and pbar.maxval:
           marked *= int(pbar.currval / pbar.maxval * width)
         else:
           marked = ''
