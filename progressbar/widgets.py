@@ -165,7 +165,7 @@ class AdaptiveETA(Timer):
 class FileTransferSpeed(Widget):
     """Widget for showing the transfer speed (useful for file transfers)."""
 
-    FORMAT = '%6.2f %s%s/s'
+    FMT = '%6.2f %s%s/s'
     PREFIXES = ' kMGTPEZY'
     __slots__ = ('unit',)
 
@@ -182,7 +182,7 @@ class FileTransferSpeed(Widget):
             power = int(math.log(speed, 1000))
             scaled = speed / 1000.**power
 
-        return self.FORMAT % (scaled, self.PREFIXES[power], self.unit)
+        return self.FMT % (scaled, self.PREFIXES[power], self.unit)
 
 
 class AnimatedMarker(Widget):
