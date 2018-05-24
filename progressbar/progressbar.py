@@ -95,7 +95,7 @@ class ProgressBar(object):
     _DEFAULT_WIDGETS = [widgets.Percentage(), ' ', widgets.Bar()]
 
     def __init__(self, maxval=None, widgets=None, term_width=None, poll=1,
-                 left_justify=True, fd=sys.stderr):
+                 left_justify=True, fd=None):
         """Initializes a progress bar with sane defaults."""
 
         # Don't share a reference with any other progress bars
@@ -104,7 +104,7 @@ class ProgressBar(object):
 
         self.maxval = maxval
         self.widgets = widgets
-        self.fd = fd
+        self.fd = fd if fd is not None else sys.stderr
         self.left_justify = left_justify
 
         self.signal_set = False
