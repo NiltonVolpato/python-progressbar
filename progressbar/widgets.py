@@ -227,7 +227,7 @@ class Percentage(Widget):
     """Displays the current percentage as a number with a percent sign."""
 
     def update(self, pbar):
-        return '%3d%%' % pbar.percentage()
+        return '%3.0f%%' % pbar.percentage()
 
 
 class FormatLabel(Timer):
@@ -271,6 +271,8 @@ class SimpleProgress(Widget):
         self.sep = sep
 
     def update(self, pbar):
+        if pbar.maxval is UnknownLength:
+            return '%d%s?' % (pbar.currval, self.sep)
         return '%d%s%s' % (pbar.currval, self.sep, pbar.maxval)
 
 

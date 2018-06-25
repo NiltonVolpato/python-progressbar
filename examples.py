@@ -7,7 +7,7 @@ import time
 from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     AdaptiveETA, FileTransferSpeed, FormatLabel, Percentage, \
     ProgressBar, ReverseBar, RotatingMarker, \
-    SimpleProgress, Timer
+    SimpleProgress, Timer, UnknownLength
 
 examples = []
 def example(fn):
@@ -204,6 +204,23 @@ def example19():
   for i in pbar([]):
     pass
   pbar.finish()
+
+@example
+def example20():
+    """Widgets that behave differently when length is unknown"""
+    widgets = ['[When length is unknown at first]',
+               ' Progress: ', SimpleProgress(),
+               ', Percent: ', Percentage(),
+               ' ', ETA(),
+               ' ', AdaptiveETA()]
+    pbar = ProgressBar(widgets=widgets, maxval=UnknownLength)
+    pbar.start()
+    for i in range(20):
+        time.sleep(0.5)
+        if i == 10:
+            pbar.maxval = 20
+        pbar.update(i + 1)
+    pbar.finish()
 
 if __name__ == '__main__':
     try:
