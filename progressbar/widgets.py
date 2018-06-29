@@ -32,8 +32,7 @@ except ImportError:
 else:
     AbstractWidget = ABCMeta('AbstractWidget', (object,), {})
 
-class UnknownLength:
-  pass
+from .progressbar import UnknownLength
 
 def format_updatable(updatable, pbar):
     if hasattr(updatable, 'update'): return updatable.update(pbar)

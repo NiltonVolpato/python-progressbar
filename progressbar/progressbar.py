@@ -38,6 +38,9 @@ from .compat import *  # for: any, next
 from . import widgets
 
 
+class UnknownLength: pass
+
+
 class ProgressBar(object):
     """The ProgressBar class which updates and prints the bar.
 
@@ -135,7 +138,7 @@ class ProgressBar(object):
             self.maxval = len(iterable)
         except:
             if self.maxval is None:
-                self.maxval = widgets.UnknownLength
+                self.maxval = UnknownLength
 
         self.__iterable = iter(iterable)
         return self
@@ -180,8 +183,8 @@ class ProgressBar(object):
 
     def percentage(self):
         """Returns the progress as a percentage."""
-        if self.maxval is widgets.UnknownLength:
-                return float("NaN")
+	if self.maxval is UnknownLength:
+		return float("NaN")
         if self.currval >= self.maxval:
             return 100.0
         return (self.currval * 100.0 / self.maxval) if self.maxval else 100.00
@@ -243,8 +246,8 @@ class ProgressBar(object):
     def update(self, value=None):
         """Updates the ProgressBar to a new value."""
 
-        if value is not None and value is not widgets.UnknownLength:
-            if (self.maxval is not widgets.UnknownLength
+        if value is not None and value is not UnknownLength:
+            if (self.maxval is not UnknownLength
                 and not 0 <= value <= self.maxval):
 
                 raise ValueError('Value out of range')
@@ -282,7 +285,7 @@ class ProgressBar(object):
         self.num_intervals = max(100, self.term_width)
         self.next_update = 0
 
-        if self.maxval is not widgets.UnknownLength:
+        if self.maxval is not UnknownLength:
             if self.maxval < 0: raise ValueError('Value out of range')
             self.update_interval = self.maxval / self.num_intervals
 
