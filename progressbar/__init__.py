@@ -42,7 +42,7 @@ automatically enable features like auto-resizing when the system supports it.
 __author__ = 'Nilton Volpato'
 __author_email__ = 'first-name dot last-name @ gmail.com'
 __date__ = '2011-05-14'
-__version__ = '2.3'
+__version__ = '2.5'
 
 from .compat import *
 from .widgets import *
