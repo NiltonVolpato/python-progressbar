@@ -357,3 +357,42 @@ class BouncingBar(Bar):
         if not self.fill_left: rpad, lpad = lpad, rpad
 
         return '%s%s%s%s%s' % (left, lpad, marker, rpad, right)
+
+
+class BrailleBouncer(Bar):
+    def __init__(self, marker='\u28FF', left='\u2847', right='\u28B8', fill=' ', fill_left=False, finish_animation=True):
+        super().__init__(marker, left, right, fill, fill_left)
+        self._charidx = -1
+        self._inverse_animation = False
+
+    def update(self, pbar, width):
+        """Updates the progress bar and bouncer animation."""
+
+        chars = ['\u28C0', '\u28E4', '\u28F6', '\u28FF', '\u283F', '\u281B', '\u2809']
+        chars_reverse = list(reversed(chars))
+
+        left, marker, right = (format_updatable(i, pbar) for i in
+                               (self.left, self.marker, self.right))
+
+        width -= len(left) + len(right)
+
+        if pbar.finished:
+            return '%s%s%s' % (left, width * marker, right)
+
+        position = int(pbar.currval % (width * 2 - 1))
+        if position > width: position = width * 2 - position
+        lpad = self.fill * (position - 1)
+        rpad = self.fill * (width - len(marker) - len(lpad))
+
+        # Swap if we want to bounce the other way
+        if not self.fill_left: rpad, lpad = lpad, rpad
+
+        self._charidx += 1
+        if self._charidx % 7 == 0:
+            self._charidx += 1
+            self._inverse_animation = not self._inverse_animation
+
+        if self._inverse_animation:
+            return '%s%s%s%s%s' % (left, lpad, chars[(self._charidx - 1) % 7], rpad, right)
+        else:
+            return '%s%s%s%s%s' % (left, lpad, chars_reverse[((self._charidx - 1) % 7)], rpad, right)
