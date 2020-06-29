@@ -164,6 +164,12 @@ class ProgressBar(object):
     # an iterator.
     next = __next__
 
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.finish()
 
     def _env_size(self):
         """Tries to find the term_width from the environment."""
