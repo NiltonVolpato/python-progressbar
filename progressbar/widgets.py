@@ -226,8 +226,13 @@ class Counter(Widget):
 class Percentage(Widget):
     """Displays the current percentage as a number with a percent sign."""
 
+    def __init__(self, prefix="%"):
+        Widget.__init__(self)
+        self.prefix = prefix
+
     def update(self, pbar):
-        return '%3.0f%%' % pbar.percentage()
+        return f"{self.prefix}{pbar.percentage():.1f}"\
+            .rjust(5 + len(self.prefix))
 
 
 class FormatLabel(Timer):
