@@ -81,18 +81,39 @@ class ProgressBar(object):
      - percentage(): progress in percent [0..100]
     """
 
-    __slots__ = ('currval', 'fd', 'finished', 'last_update_time',
-                 'left_justify', 'maxval', 'next_update', 'num_intervals',
-                 'poll', 'seconds_elapsed', 'signal_set', 'start_time',
-                 'term_width', 'update_interval', 'widgets', '_time_sensitive',
-                 '__iterable')
+    __slots__ = (
+        'currval',
+        'fd',
+        'finished',
+        'last_update_time',
+        'left_justify',
+        'maxval',
+        'next_update',
+        'num_intervals',
+        'poll',
+        'seconds_elapsed',
+        'signal_set',
+        'start_time',
+        'term_width',
+        'update_interval',
+        'widgets',
+        '_time_sensitive',
+        '__iterable',
+    )
 
     _DEFAULT_MAXVAL = 100
     _DEFAULT_TERMSIZE = 80
     _DEFAULT_WIDGETS = [widgets.Percentage(), ' ', widgets.Bar()]
 
-    def __init__(self, maxval=None, widgets=None, term_width=None, poll=1,
-                 left_justify=True, fd=None):
+    def __init__(
+        self,
+        maxval=None,
+        widgets=None,
+        term_width=None,
+        poll=1,
+        left_justify=True,
+        fd=None,
+    ):
         """Initializes a progress bar with sane defaults."""
 
         # Don't share a reference with any other progress bars
@@ -112,7 +133,8 @@ class ProgressBar(object):
                 self._handle_resize()
                 signal.signal(signal.SIGWINCH, self._handle_resize)
                 self.signal_set = True
-            except (SystemExit, KeyboardInterrupt): raise
+            except (SystemExit, KeyboardInterrupt):
+                raise
             except:
                 self.term_width = self._env_size()
 
@@ -127,7 +149,6 @@ class ProgressBar(object):
         self.update_interval = 1
         self.next_update = 0
 
-
     def __call__(self, iterable):
         """Use a ProgressBar to iterate through an iterable."""
 
@@ -140,10 +161,8 @@ class ProgressBar(object):
         self.__iterable = iter(iterable)
         return self
 
-
     def __iter__(self):
         return self
-
 
     def __next__(self):
         try:
@@ -159,17 +178,14 @@ class ProgressBar(object):
             self.finish()
             raise
 
-
     # Create an alias so that Python 2.x won't complain about not being
     # an iterator.
     next = __next__
-
 
     def _env_size(self):
         """Tries to find the term_width from the environment."""
 
         return int(os.environ.get('COLUMNS', self._DEFAULT_TERMSIZE)) - 1
-
 
     def _handle_resize(self, signum=None, frame=None):
         """Tries to catch resize signals sent from the terminal."""
@@ -177,17 +193,15 @@ class ProgressBar(object):
         h, w = array('h', ioctl(self.fd, termios.TIOCGWINSZ, '\0' * 8))[:2]
         self.term_width = w
 
-
     def percentage(self):
         """Returns the progress as a percentage."""
         if self.maxval is widgets.UnknownLength:
-                return float("NaN")
+            return float('NaN')
         if self.currval >= self.maxval:
             return 100.0
         return (self.currval * 100.0 / self.maxval) if self.maxval else 100.00
 
     percent = property(percentage)
-
 
     def _format_widgets(self):
         result = []
@@ -205,7 +219,7 @@ class ProgressBar(object):
 
         count = len(expanding)
         while count:
-            portion = max(int(math.ceil(width * 1. / count)), 0)
+            portion = max(int(math.ceil(width * 1.0 / count)), 0)
             index = expanding.pop()
             count -= 1
 
@@ -215,44 +229,43 @@ class ProgressBar(object):
 
         return result
 
-
     def _format_line(self):
         """Joins the widgets and justifies the line."""
 
         widgets = ''.join(self._format_widgets())
 
-        if self.left_justify: return widgets.ljust(self.term_width)
-        else: return widgets.rjust(self.term_width)
-
+        if self.left_justify:
+            return widgets.ljust(self.term_width)
+        else:
+            return widgets.rjust(self.term_width)
 
     def _need_update(self):
         """Returns whether the ProgressBar should redraw the line."""
-        if self.currval >= self.next_update or self.finished: return True
+        if self.currval >= self.next_update or self.finished:
+            return True
 
         delta = time.time() - self.last_update_time
         return self._time_sensitive and delta > self.poll
 
-
     def _update_widgets(self):
         """Checks all widgets for the time sensitive bit."""
 
-        self._time_sensitive = any(getattr(w, 'TIME_SENSITIVE', False)
-                                    for w in self.widgets)
-
+        self._time_sensitive = any(
+            getattr(w, 'TIME_SENSITIVE', False) for w in self.widgets
+        )
 
     def update(self, value=None):
         """Updates the ProgressBar to a new value."""
 
         if value is not None and value is not widgets.UnknownLength:
-            if (self.maxval is not widgets.UnknownLength
-                and not 0 <= value <= self.maxval):
+            if self.maxval is not widgets.UnknownLength and not 0 <= value <= self.maxval:
 
                 raise ValueError('Value out of range')
 
             self.currval = value
 
-
-        if not self._need_update(): return
+        if not self._need_update():
+            return
         if self.start_time is None:
             raise RuntimeError('You must call "start" before calling "update"')
 
@@ -262,7 +275,6 @@ class ProgressBar(object):
         self.fd.write(self._format_line() + '\r')
         self.fd.flush()
         self.last_update_time = now
-
 
     def start(self):
         """Starts measuring time, and prints the bar at 0%.
@@ -283,15 +295,14 @@ class ProgressBar(object):
         self.next_update = 0
 
         if self.maxval is not widgets.UnknownLength:
-            if self.maxval < 0: raise ValueError('Value out of range')
+            if self.maxval < 0:
+                raise ValueError('Value out of range')
             self.update_interval = self.maxval / self.num_intervals
-
 
         self.start_time = self.last_update_time = time.time()
         self.update(0)
 
         return self
-
 
     def finish(self):
         """Puts the ProgressBar bar in the finished state."""
@@ -303,3 +314,62 @@ class ProgressBar(object):
         self.fd.write('\n')
         if self.signal_set:
             signal.signal(signal.SIGWINCH, signal.SIG_DFL)
+
+    def __enter__(self):
+        """ProgressBar context manager
+
+        >>> from progressbar import ProgressBar
+        >>> with ProgressBar(maxval=4, term_width=60) as bar:
+        ...     for i in range(4):
+        ...         bar.update(i+1)
+
+        """
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            raise
+
+    def track(self, iterable):
+        """Track iterator with progress bar instance
+
+        :param iterable: An Iterator
+        :return: An iterator for the iterable, tracked by progress bar instance
+
+
+        >>> a_list = [1, 2, 3, 4]
+        >>> for x in ProgressBar(maxval=len(a_list), term_width=60).track(a_list):
+        ...     pass
+
+        See Also: track() function, which sets maxval automatically if iterable is sized.
+
+        """
+        with self:
+            for i, x in enumerate(iterable, 1):
+                yield x
+                self.update(i)
+
+
+def track(
+    iterator,
+    maxval=None,
+    widgets=None,
+    term_width=None,
+    poll=1,
+    left_justify=True,
+    fd=None,
+):
+    """Apply a progress bar tracker to iterator, taking maxval to be the length,
+    if the input has one."""
+    if maxval is None and hasattr(iterator, '__len__'):
+        maxval = len(iterator)
+    bar = ProgressBar(
+        maxval=maxval,
+        widgets=widgets,
+        term_width=term_width,
+        poll=poll,
+        left_justify=left_justify,
+        fd=fd,
+    )
+    return bar.track(iterator)
