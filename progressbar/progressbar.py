@@ -101,7 +101,7 @@ class ProgressBar(object):
 
         self.maxval = maxval
         self.widgets = widgets
-        self.fd = fd if fd is not None else sys.stderr
+        self.fd = fd if fd is not None else sys.stdout
         self.left_justify = left_justify
 
         self.signal_set = False
