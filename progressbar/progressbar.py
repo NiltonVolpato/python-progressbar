@@ -17,7 +17,12 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-"""Main ProgressBar class."""
+"""A text-based progress bar library for Python.
+
+This module provides a `ProgressBar` class that can be used to display the
+progress of a long-running operation. It is highly customizable with a variety
+of widgets to display different information.
+"""
 
 from __future__ import division
 
@@ -39,46 +44,34 @@ from . import widgets
 
 
 class ProgressBar(object):
-    """The ProgressBar class which updates and prints the bar.
+    """Manages the progress bar display.
 
-    A common way of using it is like:
-    >>> pbar = ProgressBar().start()
-    >>> for i in range(100):
-    ...    # do something
-    ...    pbar.update(i+1)
-    ...
-    >>> pbar.finish()
+    The `ProgressBar` class is the core of the library, responsible for
+    managing the state and display of the progress bar.
 
-    You can also use a ProgressBar as an iterator:
-    >>> progress = ProgressBar()
-    >>> for i in progress(some_iterable):
-    ...    # do something
-    ...
+    Examples:
+        A simple progress bar:
 
-    Since the progress bar is incredibly customizable you can specify
-    different widgets of any type in any order. You can even write your own
-    widgets! However, since there are already a good number of widgets you
-    should probably play around with them before moving on to create your own
-    widgets.
+        >>> pbar = ProgressBar(maxval=10).start()
+        >>> for i in range(10):
+        ...     time.sleep(0.1)
+        ...     pbar.update(i + 1)
+        >>> pbar.finish()
 
-    The term_width parameter represents the current terminal width. If the
-    parameter is set to an integer then the progress bar will use that,
-    otherwise it will attempt to determine the terminal width falling back to
-    80 columns if the width cannot be determined.
+        Using the progress bar as an iterator:
 
-    When implementing a widget's update method you are passed a reference to
-    the current progress bar. As a result, you have access to the
-    ProgressBar's methods and attributes. Although there is nothing preventing
-    you from changing the ProgressBar you should treat it as read only.
+        >>> pbar = ProgressBar()
+        >>> for i in pbar(range(10)):
+        ...     time.sleep(0.1)
 
-    Useful methods and attributes include (Public API):
-     - currval: current progress (0 <= currval <= maxval)
-     - maxval: maximum (and final) value
-     - finished: True if the bar has finished (reached 100%)
-     - start_time: the time when start() method of ProgressBar was called
-     - seconds_elapsed: seconds elapsed since start_time and last call to
-                        update
-     - percentage(): progress in percent [0..100]
+    Attributes:
+        currval: The current value of the progress bar.
+        maxval: The maximum value of the progress bar.
+        finished: A boolean indicating if the progress bar has finished.
+        start_time: The `time.time()` when the progress bar was started.
+        seconds_elapsed: The number of seconds elapsed since the start.
+        widgets: The list of widgets to display.
+        term_width: The width of the terminal in characters.
     """
 
     __slots__ = ('currval', 'fd', 'finished', 'last_update_time',
@@ -93,7 +86,19 @@ class ProgressBar(object):
 
     def __init__(self, maxval=None, widgets=None, term_width=None, poll=1,
                  left_justify=True, fd=None):
-        """Initializes a progress bar with sane defaults."""
+        """Initializes a new `ProgressBar`.
+
+        Args:
+            maxval: The maximum value of the progress bar. If `None`, the
+                progress bar will be in "unknown length" mode.
+            widgets: A list of widget objects to display.
+            term_width: The width of the terminal. If `None`, it will be
+                automatically detected.
+            poll: The polling interval in seconds for time-sensitive widgets.
+            left_justify: If `True`, the progress bar will be left-justified.
+            fd: The file descriptor to write the progress bar to. Defaults to
+                `sys.stderr`.
+        """
 
         # Don't share a reference with any other progress bars
         if widgets is None:
@@ -129,8 +134,14 @@ class ProgressBar(object):
 
 
     def __call__(self, iterable):
-        """Use a ProgressBar to iterate through an iterable."""
+        """Makes the `ProgressBar` usable as an iterator.
 
+        Args:
+            iterable: The iterable to iterate over.
+
+        Returns:
+            An iterator that updates the progress bar on each iteration.
+        """
         try:
             self.maxval = len(iterable)
         except:
@@ -179,7 +190,12 @@ class ProgressBar(object):
 
 
     def percentage(self):
-        """Returns the progress as a percentage."""
+        """Calculates the percentage of progress.
+
+        Returns:
+            The percentage of progress as a float, or `NaN` if the length is
+            unknown.
+        """
         if self.maxval is widgets.UnknownLength:
                 return float("NaN")
         if self.currval >= self.maxval:
@@ -241,8 +257,12 @@ class ProgressBar(object):
 
 
     def update(self, value=None):
-        """Updates the ProgressBar to a new value."""
+        """Updates the progress bar to a new value.
 
+        Args:
+            value: The new value of the progress bar. If `None`, the progress
+                bar is not updated, but the display is redrawn.
+        """
         if value is not None and value is not widgets.UnknownLength:
             if (self.maxval is not widgets.UnknownLength
                 and not 0 <= value <= self.maxval):
@@ -265,17 +285,13 @@ class ProgressBar(object):
 
 
     def start(self):
-        """Starts measuring time, and prints the bar at 0%.
+        """Starts the progress bar.
 
-        It returns self so you can use it like this:
-        >>> pbar = ProgressBar().start()
-        >>> for i in range(100):
-        ...    # do something
-        ...    pbar.update(i+1)
-        ...
-        >>> pbar.finish()
+        This method should be called before the first call to `update()`.
+
+        Returns:
+            The `ProgressBar` instance.
         """
-
         if self.maxval is None:
             self.maxval = self._DEFAULT_MAXVAL
 
@@ -294,8 +310,11 @@ class ProgressBar(object):
 
 
     def finish(self):
-        """Puts the ProgressBar bar in the finished state."""
+        """Marks the progress bar as finished.
 
+        This method should be called after the progress is complete. It will
+        update the progress bar to 100% and print a newline.
+        """
         if self.finished:
             return
         self.finished = True
