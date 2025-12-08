@@ -134,8 +134,6 @@ class AdaptiveETA(Timer):
     """Estimates the time of arrival (ETA) using a moving average."""
 
     TIME_SENSITIVE = True
-
-    TIME_SENSITIVE = True
     NUM_SAMPLES = 10
 
     def _update_samples(self, currval, elapsed):
