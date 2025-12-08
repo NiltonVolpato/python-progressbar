@@ -52,4 +52,6 @@ setup(
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Terminals'
     ],
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
 )
