@@ -82,7 +82,8 @@ class TestProgressBar(unittest.TestCase):
                 return 'x' * 100000
 
         pbar = progressbar.ProgressBar(widgets=[HugeWidget()], maxval=1)
-        self.assertEqual(len(pbar._format_widgets()[0]), progress_widgets._MAX_UPDATABLE_LENGTH)
+        self.assertEqual(len(progress_widgets.format_updatable(HugeWidget(), pbar)),
+                         progress_widgets._MAX_UPDATABLE_LENGTH)
 
 if __name__ == '__main__':
     unittest.main()

@@ -185,9 +185,9 @@ class ProgressBar(object):
         if maxval in (None, widgets.UnknownLength):
             return maxval
         if maxval < 0:
-            raise ValueError('Value out of range')
+            raise ValueError('maxval cannot be negative')
         if maxval > cls._MAX_MAXVAL:
-            raise ValueError('Value out of range')
+            raise ValueError('maxval exceeds maximum allowed value')
         return maxval
 
 
@@ -210,8 +210,8 @@ class ProgressBar(object):
     def _handle_resize(self, signum=None, frame=None):
         """Tries to catch resize signals sent from the terminal."""
 
-        h, w = array('h', ioctl(self.fd, termios.TIOCGWINSZ, b'\0' * 8))[:2]
-        self.term_width = self._sanitize_term_width(w)
+        _, term_width = array('h', ioctl(self.fd, termios.TIOCGWINSZ, b'\0' * 8))[:2]
+        self.term_width = self._sanitize_term_width(term_width)
 
 
     def percentage(self):
