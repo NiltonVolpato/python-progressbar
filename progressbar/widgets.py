@@ -40,9 +40,14 @@ else:
 class UnknownLength:
   pass
 
+_MAX_UPDATABLE_LENGTH = 4096
+
 def format_updatable(updatable, pbar):
-    if hasattr(updatable, 'update'): return updatable.update(pbar)
-    else: return updatable
+    if hasattr(updatable, 'update'):
+        updatable = updatable.update(pbar)
+    if len(updatable) > _MAX_UPDATABLE_LENGTH:
+        return updatable[:_MAX_UPDATABLE_LENGTH]
+    return updatable
 
 
 class Widget(AbstractWidget):
