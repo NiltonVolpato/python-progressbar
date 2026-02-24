@@ -2,8 +2,10 @@ import unittest
 import time
 import io
 import sys
+import os
 
 import progressbar
+from progressbar import widgets as progress_widgets
 
 class TestProgressBar(unittest.TestCase):
     def test_initialization(self):
@@ -53,6 +55,35 @@ class TestProgressBar(unittest.TestCase):
         pbar = progressbar.ProgressBar(maxval=10)
         with self.assertRaises(RuntimeError):
             pbar.update(1)
+
+    def test_term_width_is_capped(self):
+        pbar = progressbar.ProgressBar(maxval=1, term_width=10 ** 6)
+        self.assertEqual(pbar.term_width, pbar._MAX_TERMSIZE)
+
+    def test_env_term_width_is_capped(self):
+        previous_columns = os.environ.get('COLUMNS')
+        os.environ['COLUMNS'] = '1000000'
+        try:
+            pbar = progressbar.ProgressBar(maxval=1, fd=io.StringIO())
+            self.assertEqual(pbar.term_width, pbar._MAX_TERMSIZE)
+        finally:
+            if previous_columns is None:
+                del os.environ['COLUMNS']
+            else:
+                os.environ['COLUMNS'] = previous_columns
+
+    def test_maxval_too_large_raises(self):
+        with self.assertRaises(ValueError):
+            progressbar.ProgressBar(maxval=10 ** 100)
+
+    def test_huge_widget_output_is_limited(self):
+        class HugeWidget(object):
+            def update(self, pbar):
+                return 'x' * 100000
+
+        pbar = progressbar.ProgressBar(widgets=[HugeWidget()], maxval=1)
+        self.assertEqual(len(progress_widgets.format_updatable(HugeWidget(), pbar)),
+                         progress_widgets._MAX_UPDATABLE_LENGTH)
 
 if __name__ == '__main__':
     unittest.main()

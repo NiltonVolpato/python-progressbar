@@ -82,6 +82,8 @@ class ProgressBar(object):
 
     _DEFAULT_MAXVAL = 100
     _DEFAULT_TERMSIZE = 80
+    _MAX_MAXVAL = 1000000000000
+    _MAX_TERMSIZE = 4096
     _DEFAULT_WIDGETS = [widgets.Percentage(), ' ', widgets.Bar()]
 
     def __init__(self, maxval=None, widgets=None, term_width=None, poll=1,
@@ -104,14 +106,14 @@ class ProgressBar(object):
         if widgets is None:
             widgets = list(self._DEFAULT_WIDGETS)
 
-        self.maxval = maxval
+        self.maxval = self._sanitize_maxval(maxval)
         self.widgets = widgets
         self.fd = fd if fd is not None else sys.stderr
         self.left_justify = left_justify
 
         self.signal_set = False
         if term_width is not None:
-            self.term_width = term_width
+            self.term_width = self._sanitize_term_width(term_width)
         else:
             try:
                 self._handle_resize()
@@ -143,10 +145,12 @@ class ProgressBar(object):
             An iterator that updates the progress bar on each iteration.
         """
         try:
-            self.maxval = len(iterable)
+            maxval = len(iterable)
         except:
             if self.maxval is None:
                 self.maxval = widgets.UnknownLength
+        else:
+            self.maxval = self._sanitize_maxval(maxval)
 
         self.__iterable = iter(iterable)
         return self
@@ -176,17 +180,38 @@ class ProgressBar(object):
     next = __next__
 
 
+    @classmethod
+    def _sanitize_maxval(cls, maxval):
+        if maxval in (None, widgets.UnknownLength):
+            return maxval
+        if maxval < 0:
+            raise ValueError('maxval cannot be negative')
+        if maxval > cls._MAX_MAXVAL:
+            raise ValueError('maxval exceeds maximum allowed value')
+        return maxval
+
+
+    @classmethod
+    def _sanitize_term_width(cls, term_width):
+        if term_width < 1:
+            return 1
+        return min(term_width, cls._MAX_TERMSIZE)
+
+
     def _env_size(self):
         """Tries to find the term_width from the environment."""
-
-        return int(os.environ.get('COLUMNS', self._DEFAULT_TERMSIZE)) - 1
+        try:
+            term_width = int(os.environ.get('COLUMNS', self._DEFAULT_TERMSIZE))
+        except (TypeError, ValueError):
+            term_width = self._DEFAULT_TERMSIZE
+        return self._sanitize_term_width(term_width - 1)
 
 
     def _handle_resize(self, signum=None, frame=None):
         """Tries to catch resize signals sent from the terminal."""
 
-        h, w = array('h', ioctl(self.fd, termios.TIOCGWINSZ, '\0' * 8))[:2]
-        self.term_width = w
+        _, term_width = array('h', ioctl(self.fd, termios.TIOCGWINSZ, b'\0' * 8))[:2]
+        self.term_width = self._sanitize_term_width(term_width)
 
 
     def percentage(self):
