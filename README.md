@@ -2,6 +2,8 @@
 
 A simple, customizable text-based progress bar library for Python.
 
+![progressbar demo](./assets/progressbar.gif)
+
 ## Installation
 
 ```bash
