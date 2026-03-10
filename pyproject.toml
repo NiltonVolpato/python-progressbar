@@ -1,0 +1,54 @@
+[project]
+name = "progressbar"
+version = "2.6"
+description = "Text-mode progress bar library for Python."
+readme = "README.md"
+requires-python = ">=2.7"
+dependencies = []
+authors = [
+    { name = "Nilton Volpato", email = "nilton.volpato@gmail.com" },
+]
+maintainers = [
+    { name = "Nilton Volpato", email = "nilton.volpato@gmail.com" },
+]
+license = "LGPL-2.1-or-later OR BSD-3-Clause"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: User Interfaces",
+    "Topic :: Terminals",
+]
+
+[project.urls]
+Homepage = "https://github.com/NiltonVolpato/python-progressbar"
+Repository = "https://github.com/NiltonVolpato/python-progressbar"
+Issues = "https://github.com/NiltonVolpato/python-progressbar/issues"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["progressbar*"]
+exclude = ["tests*"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+progressbar = ["py.typed"]
