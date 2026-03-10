@@ -1,3 +1,10 @@
+2026-03-10:
+  - I haven't made a release in a long time. Also, I may have skipped some
+    changelog entries.
+  - Migrated from setup.py to pyproject.toml
+  - Added unittests
+  - Updated README
+
 2012-12-22:
   - Added the AdaptiveETA widget contributed Oscar Benjamin on
     http://code.google.com/p/python-progressbar/issues/detail?id=22.
