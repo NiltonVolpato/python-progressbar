@@ -179,6 +179,12 @@ class ProgressBar(object):
     # an iterator.
     next = __next__
 
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.finish()
 
     @classmethod
     def _sanitize_maxval(cls, maxval):
