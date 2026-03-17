@@ -7,7 +7,8 @@ import time
 from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     AdaptiveETA, FileTransferSpeed, FormatLabel, Percentage, \
     ProgressBar, ReverseBar, RotatingMarker, \
-    SimpleProgress, Timer, UnknownLength
+    SimpleProgress, Timer, UnknownLength, \
+    BrailleBouncer
 
 examples = []
 def example(fn):
@@ -221,6 +222,16 @@ def example20():
             pbar.maxval = 20
         pbar.update(i + 1)
     pbar.finish()
+
+
+@example
+def example21():
+    """Progress bar with braille bouncer widget"""
+    widgets = [FormatLabel('Braille Bouncer: value %(value)d - '), BrailleBouncer()]
+    pbar = ProgressBar(widgets=widgets)
+    for _ in pbar((i for i in range(180))):
+        time.sleep(0.05)
+
 
 if __name__ == '__main__':
     try:
